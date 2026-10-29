@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flipt-v2-demo
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://helm.flipt.io
+      chart: flipt-v2
+      targetRevision: "2.14.1"
+      helm:
+        releaseName: flipt
+        valueFiles:
+          - $values/helm/flipt-values.yaml
+    - repoURL: https://github.com/doijadajay/flipt-v2-gitops-demo.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: flipt-demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

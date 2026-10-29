@@ -1,0 +1,11 @@
+replicaCount: 1
+
+service:
+  enabled: true
+  type: ClusterIP
+  httpPort: 8080
+
+flipt:
+  config:
+    log:
+      level: INFO
