@@ -6,16 +6,31 @@ service:
   httpPort: 8080
 
 flipt:
+  extraEnvVars:
+    - name: FLIPT_GITHUB_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: flipt-github-write-token
+          key: token
+
   config:
     log:
       level: INFO
+
+    credentials:
+      github:
+        type: access_token
+        access_token: "${env:FLIPT_GITHUB_TOKEN}"
+
     storage:
       demo:
         remote: "https://github.com/doijadajay/flipt-v2-gitops-demo.git"
         branch: main
         poll_interval: 30s
+        credentials: github
         backend:
           type: memory
+
     environments:
       demo:
         name: Demo
