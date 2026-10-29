@@ -9,3 +9,17 @@ flipt:
   config:
     log:
       level: INFO
+    storage:
+      demo:
+        name: Demo
+        remote: "https://github.com/doijadajay/flipt-v2-gitops-demo.git"
+        branch: main
+        poll_interval: 30s
+        backend:
+          type: memory
+    environments:
+      demo:
+        name: Demo
+        storage: demo
+        directory: flags/demo
+        default: true
