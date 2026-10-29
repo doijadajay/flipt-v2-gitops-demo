@@ -10,4 +10,4 @@ flags:
       name: holiday-banner
       type: BOOLEAN_FLAG_TYPE
       description: Show a holiday discount banner in TravelCo
-      enabled: true
+      enabled: false
