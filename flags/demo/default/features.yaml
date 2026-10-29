@@ -11,3 +11,7 @@ flags:
       type: BOOLEAN_FLAG_TYPE
       description: Show a holiday discount banner in TravelCo
       enabled: true
+    - key: holiday-destinations
+      name: holiday-destinations
+      type: BOOLEAN_FLAG_TYPE
+      enabled: false
