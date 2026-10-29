@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travelco-flipt-demo
+  namespace: flipt-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travelco-flipt-demo
+  template:
+    metadata:
+      labels:
+        app: travelco-flipt-demo
+    spec:
+      containers:
+        - name: travelco
+          image: travelco-flipt-demo:1.0.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FLIPT_URL
+              value: "http://flipt-flipt-v2.flipt-demo.svc.cluster.local:8080"
+            - name: FLIPT_ENVIRONMENT
+              value: "demo"
+            - name: FLAG_NAMESPACE
+              value: "default"
+            - name: FLAG_KEY
+              value: "new-checkout"
+            - name: ENTITY_ID
+              value: "travelco-demo"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: travelco-flipt-demo
+  namespace: flipt-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: travelco-flipt-demo
+  ports:
+    - port: 80
+      targetPort: 8080
