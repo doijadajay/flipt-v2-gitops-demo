@@ -6,3 +6,8 @@ flags:
       type: BOOLEAN_FLAG_TYPE
       description: Enable the new TravelCo checkout experience
       enabled: true
+    - key: holiday-banner
+      name: holiday-banner
+      type: BOOLEAN_FLAG_TYPE
+      description: Show a holiday discount banner in TravelCo
+      enabled: false
