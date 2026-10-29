@@ -14,6 +14,30 @@ FLAG_KEY = os.getenv("FLAG_KEY", "new-checkout")
 ENTITY_ID = os.getenv("ENTITY_ID", "travelco-demo")
 
 
+def evaluate_boolean_flag(flag_key):
+    response = requests.post(
+        f"{FLIPT_URL}/evaluate/v1/boolean",
+        headers={
+            "Content-Type": "application/json",
+            "x-flipt-environment": ENVIRONMENT,
+        },
+        json={
+            "namespaceKey": NAMESPACE,
+            "flagKey": flag_key,
+            "entityId": ENTITY_ID,
+        },
+        timeout=5,
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    enabled = data.get("enabled")
+    if not isinstance(enabled, bool):
+        raise ValueError(f"Unexpected Flipt response: {data}")
+
+    return enabled
+
+
 @app.get("/")
 def index():
     return render_template("index.html")
@@ -27,30 +51,29 @@ def health():
 @app.get("/api/checkout")
 def checkout():
     try:
-        response = requests.post(
-            f"{FLIPT_URL}/evaluate/v1/boolean",
-            headers={
-                "Content-Type": "application/json",
-                "x-flipt-environment": ENVIRONMENT,
-            },
-            json={
-                "namespaceKey": NAMESPACE,
-                "flagKey": FLAG_KEY,
-                "entityId": ENTITY_ID,
-            },
-            timeout=5,
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        enabled = data.get("enabled")
-        if not isinstance(enabled, bool):
-            raise ValueError(f"Unexpected Flipt response: {data}")
-
+        enabled = evaluate_boolean_flag(FLAG_KEY)
         return jsonify({
             "status": "ok",
             "enabled": enabled,
             "flagKey": FLAG_KEY,
+            "environment": ENVIRONMENT,
+            "namespace": NAMESPACE,
+        })
+    except (requests.RequestException, ValueError) as exc:
+        return jsonify({
+            "status": "error",
+            "message": str(exc),
+        }), 502
+
+
+@app.get("/api/holiday-banner")
+def holiday_banner():
+    try:
+        enabled = evaluate_boolean_flag("holiday-banner")
+        return jsonify({
+            "status": "ok",
+            "enabled": enabled,
+            "flagKey": "holiday-banner",
             "environment": ENVIRONMENT,
             "namespace": NAMESPACE,
         })

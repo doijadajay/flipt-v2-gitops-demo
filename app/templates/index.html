@@ -9,10 +9,12 @@ body{font-family:Arial,sans-serif;background:#f3f6fb;color:#172033;margin:0}
 header{background:#14213d;color:white;padding:28px}
 main{max-width:800px;margin:30px auto;padding:0 18px}
 .card{background:white;border-radius:14px;padding:24px;margin-bottom:18px;box-shadow:0 4px 18px #0001}
-button{background:#2463eb;color:white;border:0;padding:12px 18px;border-radius:8px;cursor:pointer}
+button{background:#2463eb;color:white;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;margin:5px 5px 5px 0}
 .status{font-weight:bold;padding:8px 12px;border-radius:20px;display:inline-block}
 .on{background:#d9fbe5;color:#146c43}.off{background:#fff0cc;color:#8a5b00}
 .error{background:#ffe0e0;color:#a00000}
+.banner{background:#fff0cc;border:1px solid #f0c36d;color:#704900;padding:18px;border-radius:12px;margin-bottom:18px}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -21,27 +23,46 @@ button{background:#2463eb;color:white;border:0;padding:12px 18px;border-radius:8
 <p>Feature flag demonstration powered by Flipt v2</p>
 </header>
 <main>
+<section id="holiday-banner" class="banner" hidden>
+<h2>🎉 Holiday Special!</h2>
+<p>Plan your next getaway and check out our special holiday offers.</p>
+</section>
+
 <section class="card">
 <h2 id="title">Checking Flipt...</h2>
 <p id="description">Evaluating the new-checkout feature flag.</p>
 <p><span id="status" class="status">Loading</span></p>
-<button onclick="evaluateFlag()">Evaluate flag again</button>
-<p>Flag: <code>new-checkout</code> | Environment: <code>demo</code></p>
+<button onclick="evaluateCheckout()">Evaluate checkout flag again</button>
+<p>Flag: <code>new-checkout</code> | Environment: <code>Demo</code></p>
+<p id="checkout-error" class="error" hidden></p>
 </section>
+
+<section class="card">
+<h2>Holiday Banner Flag</h2>
+<p>Flag: <code>holiday-banner</code> | Environment: <code>Demo</code></p>
+<p><span id="banner-status" class="status">Loading</span></p>
+<button onclick="evaluateHolidayBanner()">Evaluate holiday banner again</button>
+<p id="banner-error" class="error" hidden></p>
+</section>
+
 <section class="card">
 <h2>Choose your holiday</h2>
 <p>Paris weekend · Mountain escape · Beach holiday</p>
 <p id="checkout">Loading checkout experience...</p>
 </section>
+
 <section class="card">
 <h3>Evaluation details</h3>
 <pre id="details"></pre>
 </section>
 </main>
+
 <script>
-async function evaluateFlag(){
+async function evaluateCheckout(){
   const title=document.getElementById("title");
   const status=document.getElementById("status");
+  const error=document.getElementById("checkout-error");
+  error.hidden=true;
   title.textContent="Checking Flipt...";
   try{
     const r=await fetch("/api/checkout",{cache:"no-store"});
@@ -59,16 +80,42 @@ async function evaluateFlag(){
       document.getElementById("checkout").textContent="Classic checkout: enter traveler details and confirm booking.";
     }
     document.getElementById("details").textContent=
-      "Flag: "+d.flagKey+"\nEnvironment: "+d.environment+"\nNamespace: "+d.namespace;
+      "Flag: "+d.flagKey+"\nEnvironment: "+d.environment+"\nNamespace: "+d.namespace+"\nEnabled: "+d.enabled;
   }catch(e){
-    title.textContent="Could not evaluate flag";
+    title.textContent="Could not evaluate checkout flag";
     status.textContent="ERROR"; status.className="status error";
     document.getElementById("description").textContent="Check Flipt configuration and application logs.";
     document.getElementById("checkout").textContent="Checkout state is unavailable.";
-    document.getElementById("details").textContent=e.message;
+    error.textContent=e.message;
+    error.hidden=false;
   }
 }
-evaluateFlag();
+
+async function evaluateHolidayBanner(){
+  const banner=document.getElementById("holiday-banner");
+  const status=document.getElementById("banner-status");
+  const error=document.getElementById("banner-error");
+  error.hidden=true;
+  status.textContent="Checking...";
+  status.className="status";
+  try{
+    const r=await fetch("/api/holiday-banner",{cache:"no-store"});
+    const d=await r.json();
+    if(!r.ok || d.status!=="ok") throw new Error(d.message||"Flag evaluation failed");
+    banner.hidden=!d.enabled;
+    status.textContent=d.enabled?"FLAG ON":"FLAG OFF";
+    status.className="status "+(d.enabled?"on":"off");
+  }catch(e){
+    banner.hidden=true;
+    status.textContent="ERROR";
+    status.className="status error";
+    error.textContent=e.message;
+    error.hidden=false;
+  }
+}
+
+evaluateCheckout();
+evaluateHolidayBanner();
 </script>
 </body>
 </html>
