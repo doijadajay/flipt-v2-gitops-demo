@@ -11,7 +11,6 @@ flipt:
       level: INFO
     storage:
       demo:
-        name: Demo
         remote: "https://github.com/doijadajay/flipt-v2-gitops-demo.git"
         branch: main
         poll_interval: 30s
