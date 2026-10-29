@@ -5,4 +5,4 @@ flags:
       name: new-checkout
       type: BOOLEAN_FLAG_TYPE
       description: Enable the new TravelCo checkout experience
-      enabled: false
+      enabled: true
