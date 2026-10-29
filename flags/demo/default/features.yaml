@@ -1,2 +1,8 @@
 version: "1.6"
 namespace: default
+flags:
+    - key: new-checkout
+      name: new-checkout
+      type: BOOLEAN_FLAG_TYPE
+      description: Enable the new TravelCo checkout experience
+      enabled: true
