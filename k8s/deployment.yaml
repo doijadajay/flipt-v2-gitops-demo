@@ -23,7 +23,7 @@ spec:
             - name: FLIPT_URL
               value: "http://flipt-flipt-v2.flipt-demo.svc.cluster.local:8080"
             - name: FLIPT_ENVIRONMENT
-              value: "demo"
+              value: "Demo"
             - name: FLAG_NAMESPACE
               value: "default"
             - name: FLAG_KEY

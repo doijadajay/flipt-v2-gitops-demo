@@ -8,7 +8,7 @@ FLIPT_URL = os.getenv(
     "FLIPT_URL",
     "http://flipt-flipt-v2.flipt-demo.svc.cluster.local:8080"
 ).rstrip("/")
-ENVIRONMENT = os.getenv("FLIPT_ENVIRONMENT", "demo")
+ENVIRONMENT = os.getenv("FLIPT_ENVIRONMENT", "Demo")
 NAMESPACE = os.getenv("FLAG_NAMESPACE", "default")
 FLAG_KEY = os.getenv("FLAG_KEY", "new-checkout")
 ENTITY_ID = os.getenv("ENTITY_ID", "travelco-demo")
