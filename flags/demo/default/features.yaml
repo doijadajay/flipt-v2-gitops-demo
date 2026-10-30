@@ -14,4 +14,4 @@ flags:
     - key: holiday-destinations
       name: holiday-destinations
       type: BOOLEAN_FLAG_TYPE
-      enabled: true
+      enabled: false
